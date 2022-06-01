@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 from IPython import display
 
-plt.ion()
+plt.ioff()
 
-def plot(scores, mean_scores):
+def plot(scores, mean_scores, model_type, learning_rate):
     display.clear_output(wait=True)
     display.display(plt.gcf())
     plt.clf()
-    plt.title('Training...')
+    plt.title('Training ' + model_type + ' ' + 'LR: ' + str(learning_rate))
     plt.xlabel('Number of Games')
     plt.ylabel('Score')
     plt.plot(scores)

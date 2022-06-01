@@ -27,11 +27,20 @@ class Linear_QNet(nn.Module):
         torch.save(self.state_dict(), file_name)
 
 class QTrainer:
-    def __init__(self, model, learning_rate, gamma):
+    def __init__(self, model, learning_rate, gamma, model_type):
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.model = model
-        self.optimizer = optim.Adam(model.parameters(), lr=self.learning_rate)
+        if model_type == "Adam":
+            self.optimizer = optim.Adam(model.parameters(), lr=self.learning_rate)
+        elif model_type == "Adamax":
+            self.optimizer = optim.Adamax(model.parameters(), lr=self.learning_rate)
+        elif model_type == "Adagrad":
+            self.optimizer = optim.Adagrad(model.parameters(), lr=self.learning_rate)
+        elif model_type == "Rprop":
+            self.optimizer = optim.Rprop(model.parameters(), lr=self.learning_rate)
+        elif model_type == "SGD":
+            self.optimizer = optim.SGD(model.parameters(), lr=self.learning_rate)
         self.criterion = nn.MSELoss()
 
     def train_step(self, state, action, reward, next_state, done):

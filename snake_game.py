@@ -24,13 +24,14 @@ BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 20
-SPEED = 100
+SPEED = 1000
 
 class SnakeGame:
     
-    def __init__(self, w=640, h=480):
+    def __init__(self, model_type, w=640, h=480):
         self.w = w
         self.h = h
+        self.model_type = model_type
         # init display
         self.display = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption('Snake')
@@ -114,7 +115,7 @@ class SnakeGame:
             
         pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
         
-        text = font.render("Score: " + str(self.score), True, WHITE)
+        text = font.render("Score: " + str(self.score) + " Model: " + self.model_type, True, WHITE)
         self.display.blit(text, [0, 0])
         pygame.display.flip()
         

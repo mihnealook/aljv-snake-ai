@@ -1,6 +1,7 @@
 import torch
 import random
 import numpy as np
+import sys
 from collections import deque
 from snake_game import SnakeGame, Direction, Point
 from model import Linear_QNet, QTrainer
@@ -11,13 +12,14 @@ BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
 
 class Agent:
-    def __init__(self):
+    def __init__(self, model_type, learning_rate):
         self.no_games = 0
         self.epsilon = 0
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
         self.model = Linear_QNet(11, 256, 3)
-        self.trainer = QTrainer(self.model, learning_rate=LEARNING_RATE, gamma=self.gamma)
+        self.model_type = model_type
+        self.trainer = QTrainer(self.model, learning_rate=learning_rate, gamma=self.gamma, model_type=model_type)
 
     def get_state(self, game):
         head = game.snake[0]
@@ -81,9 +83,9 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
-        self.epsilon = 2000 - self.no_games
+        self.epsilon = 80 - self.no_games
         final_move = [0, 0, 0]
-        if random.randint(0, 4000) < self.epsilon:
+        if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 2)
             final_move[move] = 1
         else:
@@ -94,13 +96,13 @@ class Agent:
         
         return final_move
     
-def train():
+def train(model_type, learning_rate):
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
     record = 0
-    agent = Agent()
-    game = SnakeGame()
+    agent = Agent(model_type, learning_rate)
+    game = SnakeGame(model_type=model_type)
     while True:
         state_old = agent.get_state(game)
         final_move = agent.get_action(state_old)
@@ -118,7 +120,7 @@ def train():
 
             if score > record:
                 record = score
-                agent.model.save()
+                agent.model.save('model_' + model_type + '.pth')
             
             print('Game', agent.no_games, 'Score', score, 'Record:', record)
 
@@ -128,7 +130,7 @@ def train():
             mean_score = total_score / agent.no_games
             plot_mean_scores.append(mean_score)
 
-            plot(plot_scores, plot_mean_scores)
+            plot(plot_scores, plot_mean_scores, model_type, learning_rate)
 
 if __name__ == '__main__':
-    train()
+    train(sys.argv[1], float(sys.argv[2]))
